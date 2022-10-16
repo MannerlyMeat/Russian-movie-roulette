@@ -79,10 +79,6 @@ def fill_database(film_names, film_rating):
         if not temp_bool:
             insert_to_bd(sip, int(film_rating[i].string))
             conn.commit()
-    
-
-
-
 
 
 get_fnames()
