@@ -6,7 +6,7 @@ import sqlite3
 import random
 
 
-token = "token"
+token = "5688573027:AAGGR_1PxEHThTNwLjOsU8WL7Y_jq8mWx_o"
 conn = sqlite3.connect('../Russian-movie-roulette.db')
 
 

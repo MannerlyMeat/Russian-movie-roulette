@@ -24,8 +24,10 @@ def get_fnames():
         requestSite = requests.get(active_url, headers=headers, allow_redirects=True)
         soup = bs(requestSite.text, "html.parser")
         film_names = soup.find_all('a', class_="title")
-        rating = soup.find_all('div', attrs = {'class':re.compile("metascore_w large movie")})
-        fill_database(film_names, rating)
+        rating = soup.find_all('div', attrs={'class': re.compile("metascore_w large movie")})
+        film_url = soup.find_all('a', class_="title", href=True)
+        #print(film_url[1].get('href'))
+        fill_database(film_names, rating, film_url)
 
 
 def create_sqlite_DB():
@@ -47,17 +49,17 @@ def check_database(film_name):
     return res[0]
 
 
-def insert_to_bd(movie_name: str, rating: int):
+def insert_to_bd(movie_name: str, rating: int, film_url: str):
     cur = conn.cursor()
     text = r"""
-                INSERT INTO movies(movie_name, rating) 
-                VALUES('{movie_name}', {rating});
-                """.format(movie_name=movie_name, rating=rating)
+                INSERT INTO movies(movie_name, rating, url) 
+                VALUES('{movie_name}', {rating}, '{film_url}');
+                """.format(movie_name=movie_name, rating=rating, film_url=film_url)
     print(text)
     cur.execute(r"""
-                INSERT INTO movies(movie_name, rating) 
-                VALUES("{movie_name}", {rating});
-                """.format(movie_name=movie_name, rating=rating))
+                INSERT INTO movies(movie_name, rating, url) 
+                VALUES("{movie_name}", {rating}, '{film_url}');
+                """.format(movie_name=movie_name, rating=rating, film_url=film_url))
     conn.commit()
 
 
@@ -68,7 +70,7 @@ def delete_name_film(movie_name):
     print(cur.fetchall())
 
 
-def fill_database(film_names, film_rating):
+def fill_database(film_names, film_rating, film_url):
 
     for i in range(len(film_names)):
         sip = film_names[i].h3.string
@@ -77,7 +79,7 @@ def fill_database(film_names, film_rating):
         print(len(film_names))
         print(len(film_rating))
         if not temp_bool:
-            insert_to_bd(sip, int(film_rating[i].string))
+            insert_to_bd(sip, int(film_rating[i].string), str(film_url[i].get('href')))
             conn.commit()
 
 
