@@ -6,11 +6,11 @@ from bs4 import BeautifulSoup as bs
 # conn = MySQLdb.connect("127.0.0.1", "root", "", "roulette_movies")
 conn = sqlite3.connect('Russian-movie-roulette.db')
 
-url = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+#url = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-requestSite = requests.get(url, headers=headers, allow_redirects=True)
-soup = bs(requestSite.text, "html.parser")
+#requestSite = requests.get(url, headers=headers, allow_redirects=True)
+#soup = bs(requestSite.text, "html.parser")
 
 
 def get_count_pages():
@@ -83,5 +83,18 @@ def fill_database(film_names, film_rating, film_url):
             conn.commit()
 
 
-get_fnames()
+def get_fnames_imdb():
+    print()
+
+
+def imdb_film_count():
+    imdb_url = "https://imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
+    imdbSite = requests.get(imdb_url, headers=headers, allow_redirects=True)
+    film_count = bs(imdbSite.text, "html.parser")
+    film_count = film_count.find_all('div', class_='desc')
+    return film_count[0].span.string
+
+
+imdb_film_count()
+#get_fnames()
 
