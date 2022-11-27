@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup as bs
 # conn = MySQLdb.connect("127.0.0.1", "root", "", "roulette_movies")
 conn = sqlite3.connect('Russian-movie-roulette.db')
 
-#url = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+url = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 #requestSite = requests.get(url, headers=headers, allow_redirects=True)
@@ -14,6 +14,8 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
 
 
 def get_count_pages():
+    requestSite = requests.get(url, headers=headers, allow_redirects=True)
+    soup = bs(requestSite.text, "html.parser")
     pages_count = soup.find_all('a', class_="page_num")
     return pages_count[len(pages_count) - 1].string
 
@@ -92,7 +94,9 @@ def imdb_film_count():
     imdbSite = requests.get(imdb_url, headers=headers, allow_redirects=True)
     film_count = bs(imdbSite.text, "html.parser")
     film_count = film_count.find_all('div', class_='desc')
-    return film_count[0].span.string
+    film_number = re.search("[ ]([0-9]+[,0-9]+)", film_count[0].span.string)
+    film_number = film_number.group()
+    return print(int(film_number.replace(',', '')))
 
 
 imdb_film_count()
