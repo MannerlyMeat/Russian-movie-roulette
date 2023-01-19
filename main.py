@@ -3,14 +3,16 @@ import sqlite3
 import re
 from bs4 import BeautifulSoup as bs
 
+
 # conn = MySQLdb.connect("127.0.0.1", "root", "", "roulette_movies")
 conn = sqlite3.connect('Russian-movie-roulette.db')
 
-url = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+#url_metacriric = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-requestSite = requests.get(url, headers=headers, allow_redirects=True)
-soup = bs(requestSite.text, "html.parser")
+#requestSite = requests.get(url_metacriric, headers=headers, allow_redirects=True)
+#soup = bs(requestSite.text, "html.parser")
 
 
 def get_count_pages():
@@ -83,5 +85,23 @@ def fill_database(film_names, film_rating, film_url):
             conn.commit()
 
 
-get_fnames()
+def get_films_imdb():
+    imdb_film("1-50 of 1,309,202 titles.")
+    print(imdb_film("1-50 of 1,309,202 titles."))
+
+
+def imdb_film(a):
+    a = re.findall(r"[-+]?\d+", a)
+    for i in range(len(a)):
+        if i <= 1:
+            a.pop(0)
+        else:
+            imdb_film_count = "".join(a)
+    return(int(imdb_film_count))
+
+
+
+
+get_films_imdb()
+#get_fnames()
 
