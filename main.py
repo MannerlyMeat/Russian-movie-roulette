@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup as bs
 conn = sqlite3.connect('Russian-movie-roulette.db')
 
 #url_metacriric = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
-url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
+#url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 #requestSite = requests.get(url_metacriric, headers=headers, allow_redirects=True)
@@ -16,6 +16,9 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
 
 
 def get_count_pages():
+    url_metacriric = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+    requestSite = requests.get(url_metacriric, headers=headers, allow_redirects=True)
+    soup = bs(requestSite.text, "html.parser")
     pages_count = soup.find_all('a', class_="page_num")
     return pages_count[len(pages_count) - 1].string
 
@@ -86,19 +89,32 @@ def fill_database(film_names, film_rating, film_url):
 
 
 def get_films_imdb():
-    imdb_film("1-50 of 1,309,202 titles.")
-    print(imdb_film("1-50 of 1,309,202 titles."))
+    url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
+    for i in range(round(imdb_film()/50)):
+        url_imdb = requests.get(url_imdb, headers=headers, allow_redirects=True)
+        soup = bs(url_imdb.text, "html.parser")
+        url_imdb = soup.find_all("a", class_="lister-page-next next-page", href=True)
+        url_imdb = "https://www.imdb.com{0}".format(url_imdb[0].get('href'))
+        print(url_imdb)
+    print(url_imdb)
 
 
-def imdb_film(a):
-    a = re.findall(r"[-+]?\d+", a)
-    for i in range(len(a)):
+def imdb_film():
+    url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
+    request = requests.get(url_imdb, headers=headers, allow_redirects=True)
+    soup = bs(request.text, "html.parser")
+    count_films = soup.find_all("div", class_="desc")
+    count_films = re.findall(r"[-+]?\d+", count_films[1].span.string)
+    for i in range(len(count_films)):
         if i <= 1:
-            a.pop(0)
+            count_films.pop(0)
         else:
-            imdb_film_count = "".join(a)
+            imdb_film_count = "".join(count_films)
     return(int(imdb_film_count))
 
+
+def get_address_imdb():
+    print("")
 
 
 
