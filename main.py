@@ -2,6 +2,7 @@ import requests
 import sqlite3
 import re
 from bs4 import BeautifulSoup as bs
+import time
 
 
 # conn = MySQLdb.connect("127.0.0.1", "root", "", "roulette_movies")
@@ -76,7 +77,6 @@ def delete_name_film(movie_name):
 
 
 def fill_database(film_names, film_rating, film_url):
-
     for i in range(len(film_names)):
         sip = film_names[i].h3.string
         sip = sip.replace('"', '')
@@ -90,18 +90,15 @@ def fill_database(film_names, film_rating, film_url):
 
 def get_films_imdb():
     url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
-    for i in range(round(imdb_film()/50)):
-        url_imdb = requests.get(url_imdb, headers=headers, allow_redirects=True)
-        soup = bs(url_imdb.text, "html.parser")
-        url_imdb = soup.find_all("a", class_="lister-page-next next-page", href=True)
-        url_imdb = "https://www.imdb.com{0}".format(url_imdb[0].get('href'))
+    pages = round(imdb_films(url_imdb) / 50)
+    for page in range(pages):
+        url_imdb = get_address_imdb(url_imdb)
+        #time.sleep(1)
         print(url_imdb)
-    print(url_imdb)
 
 
-def imdb_film():
-    url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
-    request = requests.get(url_imdb, headers=headers, allow_redirects=True)
+def imdb_films(url):
+    request = requests.get(url, headers=headers, allow_redirects=True)
     soup = bs(request.text, "html.parser")
     count_films = soup.find_all("div", class_="desc")
     count_films = re.findall(r"[-+]?\d+", count_films[1].span.string)
@@ -113,8 +110,12 @@ def imdb_film():
     return(int(imdb_film_count))
 
 
-def get_address_imdb():
-    print("")
+def get_address_imdb(url):
+    url = requests.get(url, headers=headers, allow_redirects=True)
+    soup = bs(url.text, "html.parser")
+    url = soup.find_all("a", class_="lister-page-next next-page", href=True)
+    url = "https://www.imdb.com{0}".format(url[0].get('href'))
+    return url
 
 
 
