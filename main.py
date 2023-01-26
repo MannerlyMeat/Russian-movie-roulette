@@ -92,6 +92,7 @@ def get_films_imdb():
     url_imdb = "https://www.imdb.com/search/title/?&explore=title_type&view=simple&title_type=short,tvSeries,tvMovie,tvMiniSeries"
     pages = round(imdb_films(url_imdb) / 50)
     for page in range(pages):
+        imdb_film_parser(url_imdb)
         url_imdb = get_address_imdb(url_imdb)
         #time.sleep(1)
         print(url_imdb)
@@ -116,6 +117,14 @@ def get_address_imdb(url):
     url = soup.find_all("a", class_="lister-page-next next-page", href=True)
     url = "https://www.imdb.com{0}".format(url[0].get('href'))
     return url
+
+
+def imdb_film_parser(url):
+    url = requests.get(url, headers=headers, allow_redirects=True)
+    soup = bs(url.text, "html.parser")
+    url = soup.find_all("div", class_="lister-col-wrapper")
+    name = soup.find_all('div', class_="col-title")
+    return print(name)
 
 
 
