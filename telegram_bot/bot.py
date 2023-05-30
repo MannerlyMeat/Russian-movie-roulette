@@ -6,7 +6,7 @@ import sqlite3
 import random
 
 
-token = ""
+token = "5688573027:AAGoVSNeyvuaaQNbhYDzbCIHNssxSz0inv4"
 conn = sqlite3.connect('../Russian-movie-roulette.db')
 
 
@@ -33,6 +33,7 @@ def start_negative_ratings():
 
 def positive_rating_films():
     cur.execute("""select movie_name, rating from movies where id = {}""".format(rnd.randint(0, start_negative_ratings())))
+    print()
     return cur.fetchone()
 
 
