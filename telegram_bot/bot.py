@@ -6,7 +6,7 @@ import sqlite3
 import random
 
 
-token = "token"
+token = "5688573027:AAGoVSNeyvuaaQNbhYDzbCIHNssxSz0inv4"
 conn = sqlite3.connect('../Russian-movie-roulette.db')
 
 
@@ -27,17 +27,22 @@ def get_count():
 def start_negative_ratings():
     cur.execute("""select id from movies where rating = 35""")
     awfull_rating = cur.fetchone()
+    print(awfull_rating)
     return awfull_rating[0]
 
 
 def positive_rating_films():
-    cur.execute("""select movie_name, rating from movies where id = {}""".format(rnd.randint(0, start_negative_ratings())))
+    cur.execute("""select movie_name, rating from movies where rating > 45 order by random() limit 1""")
     return cur.fetchone()
 
 
 def negative_rating_film():
-    cur.execute("""select movie_name, rating from movies where id = {}""".format(rnd.randint(start_negative_ratings(),
-                                                                                             get_count())))
+    cur.execute("""select movie_name, rating from movies where rating <= 45 order by random() limit 1""")
+    return cur.fetchone()
+
+
+def get_film_url(film_name):
+    cur.execute("""select url from movies where movie_name = '{}'""".format(film_name))
     return cur.fetchone()
 
 
@@ -69,10 +74,12 @@ async def start_roullete(message: types.Message):
         await message.reply("Сегодня удача на твоей стороне, {}".format(message.from_user.first_name) +
                             ". Тебе выпал {}".format(film_list[shot][0]) +
                             " с рейтингом {}".format(film_list[shot][1]))
+        await message.reply(get_film_url(film_list[shot][0])[0])
     else:
         await message.reply("Не в этот раз, {}".format(message.from_user.first_name) +
                             ". Видимо удача сегодня не на твоей стороне, раз тебе выпал {}".format(film_list[shot][0]) +
                             " с рейтингом {}".format(film_list[shot][1]))
+        await message.reply(get_film_url(film_list[shot][0])[0])
 
 
 @dp.message_handler(text='Информация')
