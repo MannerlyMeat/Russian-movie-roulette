@@ -11,26 +11,6 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)'
                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
 
-
-#def get_count_pages():             #Функция получения количества страниц на metacritic
-#    url_metacriric = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
-#    requestSite = requests.get(url_metacriric, headers=headers, allow_redirects=True)
-#    soup = bs(requestSite.text, "html.parser")
-#    pages_count = soup.find_all('a', class_="page_num")
-#    return pages_count[len(pages_count) - 1].string
-
-
-#def get_fnames():                  #Функция парсинга фильмов с metacritic
-#    for pages in range(int(get_count_pages())):
-#        active_url = ("https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc&page={}".format(pages))
-#        requestSite = requests.get(active_url, headers=headers, allow_redirects=True)
-#        soup = bs(requestSite.text, "html.parser")
-#        film_names = soup.find_all('a', class_="title")
-#        rating = soup.find_all('div', attrs={'class': re.compile("metascore_w large movie")})
-#        film_url = soup.find_all('a', class_="title", href=True)
-#        fill_database(film_names, rating, film_url)
-
-
 def create_sqlite_DB():
     cur = conn.cursor()
     cur.execute("""
@@ -75,6 +55,7 @@ def fill_database(film_names, film_rating, film_url):       #Заполнени�
     for i in range(len(film_names)):
         sip = film_names
         sip = sip.replace('"', '')
+        sip = sip.replace("'", '')
         temp_bool = check_database(sip)
 
         if not temp_bool:
@@ -145,7 +126,33 @@ def get_film_rating_imdb(url):                  #Функция получени
 
 
 get_films_imdb()
+
+
+
+
+
+
+
+#----Не используется----
+
+
+#def get_count_pages():             #Функция получения количества страниц на metacritic
+#    url_metacriric = "https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc"
+#    requestSite = requests.get(url_metacriric, headers=headers, allow_redirects=True)
+#    soup = bs(requestSite.text, "html.parser")
+#    pages_count = soup.find_all('a', class_="page_num")
+#    return pages_count[len(pages_count) - 1].string
+
+
+#def get_fnames():                  #Функция парсинга фильмов с metacritic
+#    for pages in range(int(get_count_pages())):
+#        active_url = ("https://www.metacritic.com/browse/movies/score/metascore/all/filtered?sort=desc&page={}".format(pages))
+#        requestSite = requests.get(active_url, headers=headers, allow_redirects=True)
+#        soup = bs(requestSite.text, "html.parser")
+#        film_names = soup.find_all('a', class_="title")
+#        rating = soup.find_all('div', attrs={'class': re.compile("metascore_w large movie")})
+#        film_url = soup.find_all('a', class_="title", href=True)
+#        fill_database(film_names, rating, film_url)
+
+
 #get_fnames()
-
-
-
